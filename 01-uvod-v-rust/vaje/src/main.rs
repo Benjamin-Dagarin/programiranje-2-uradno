@@ -7,7 +7,28 @@ use core::panic;
 /// Napišite funkcijo `fib`, ki sprejme začetna člena fibbonacijevega zaporedja, število `n` in vrne `n`-ti člen zaporedja
 
 fn fib(a0: u32, a1: u32, n: u32) -> u32 {
-    panic!("Not implemented");
+    let mut prvi_clen = a0;
+    let mut drugi_clen = a1;
+    let mut index = 0;
+    loop {
+        if index >= n {
+            return prvi_clen;
+        }
+        let vsota = prvi_clen + drugi_clen;
+        prvi_clen = drugi_clen;
+        drugi_clen = vsota;
+        index += 1;
+    }
+    // let a :u32 = loop {
+    // if index >= n {
+    //    return prvi_clen;
+    // }
+    //let vsota = prvi_clen + drugi_clen;
+    //prvi_clen = drugi_clen;
+    //drugi_clen = vsota;
+    //index += 1;
+    // potem se v a shrani vrednost (torej zanke vračajo vrednost, kar je drugače kot pri drugih
+    //programskih jezikih)
 }
 
 /// ------------------------------------------------------------------------------------------------
@@ -49,9 +70,49 @@ fn bisekcija(mut a: f64, mut b: f64, fun: fn(f64) -> f64, prec: f64) -> f64 {
 /// Popravite igro ugibanja iz prejšnje naloge, da bo delovala sledeče
 /// Uporabnika sprašujemo po novi številki, vse dokler so števila, ki jih vpisuje del nekega aritmetičnega zaporedja
 /// Če uporabnik vpiše neveljavno število to ni napaka, program za pogoj aritmetičnega zaporedja upošteva samo veljavno vpisana števila.
-
+use std::cmp::Ordering;
+use std::io;
 fn guessing_game() {
-    panic!("Not implemented");
+    println!("Guess the number!");
+    let mut first: Option<i32> = None;
+    let mut second: Option<i32> = None;
+    let mut diff: Option<i32> = None;
+
+    loop {
+        println!("Please input your number.");
+
+        let mut guess = String::new();
+
+        io::stdin()
+            .read_line(&mut guess)
+            .expect("Failed to read line");
+
+        let guess: i32 = match guess.trim().parse() {
+            Ok(num) => num,
+            Err(_) => continue,
+        };
+
+        match first {
+            Some(n1) => {
+                match second {
+                    Some(n2) => {
+                        if guess - n2 != diff.unwrap() {
+                            println!("Vnešeni člen ni naslednji člen aritmetičnega zaporedja!");
+                            return;
+                            second = Some(guess);
+                        }
+                    }
+                    None => {
+                        second = Some(guess);
+                        diff = Some((guess - first.unwrap())) //unwrap pridobi vrednost iz Some-a
+                    }
+                }
+            }
+            None => {
+                first = Some(guess);
+            }
+        };
+    }
 }
 
 /// ------------------------------------------------------------------------------------------------
@@ -68,13 +129,13 @@ fn ordered(arr: &[u32]) -> bool {
     panic!("Not implemented");
 }
 
-fn vsebuje<T : PartialEq>(v: &Vec<T>, x : &T) -> bool {
+fn vsebuje<T: PartialEq>(v: &Vec<T>, x: &T) -> bool {
     for y in v {
-      if x == y {
-        return true
-      }
+        if x == y {
+            return true;
+        }
     }
-    return false
+    return false;
 }
 
 /// ------------------------------------------------------------------------------------------------
@@ -114,7 +175,9 @@ fn pyramid(n: u32) {
 /// A B C D C B A
 /// Napišite funkcijo `fn selection_sort(mut arr: [u32])`, ki uredi tabelo `arr` z uporabo algoritma urejanja z izbiranjem
 
-fn main() {}
+fn main() {
+    println!("{}", fib(0, 1, 5));
+}
 
 #[cfg(test)]
 mod tests {
@@ -127,6 +190,5 @@ mod tests {
     }
 
     #[test]
-    fn test_fib() {
-    }
+    fn test_fib() {}
 }
