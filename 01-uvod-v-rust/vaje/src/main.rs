@@ -41,6 +41,46 @@ fn fib(a0: u32, a1: u32, n: u32) -> u32 {
 
 // Dan, mesec, leto
 type Date = (u32, u32, u32);
+fn je_veljaven_datum(datum: Date) -> bool {
+    if (datum.1 == 1)
+        || datum.1 == 3
+        || datum.1 == 5
+        || datum.1 == 7
+        || datum.1 == 8
+        || datum.1 == 10
+        || datum.1 == 12
+    {
+        if datum.0 > 0 && datum.0 <= 31 {
+            true
+        } else {
+            return false;
+        }
+    } else if datum.1 == 4 || datum.1 == 6 || datum.1 == 9 || datum.1 == 11 {
+        if datum.0 > 0 && datum.0 <= 30 {
+            true
+        } else {
+            return false;
+        }
+    } else if datum.1 == 2 {
+        if datum.0 > 0 && datum.0 < 29 {
+            return true;
+        } else if datum.0 == 29 {
+            if datum.2 % 4 == 0 && datum.2 % 100 != 0 {
+                return true;
+            } else if datum.2 % 100 == 0 && datum.2 % 400 != 0 {
+                return false;
+            } else if datum.2 % 400 == 0 {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    } else {
+        return false;
+    }
+}
 
 /// ------------------------------------------------------------------------------------------------
 
@@ -48,7 +88,10 @@ type Date = (u32, u32, u32);
 /// Iteracijsko funkcijo zaporedoma uporablja, dokler za rezultat ne velja zaustavitveni pogoj, in vrne prvi rezultat, ki zadošča zaustavitvenemu pogoju.
 
 fn iteracija(mut start: u32, fun: fn(u32) -> u32, cond: fn(u32) -> bool) -> u32 {
-    panic!("Not implemented");
+    while cond(start) != true {
+        start = fun(start);
+    }
+    start
 }
 
 /// ------------------------------------------------------------------------------------------------
@@ -62,7 +105,32 @@ fn iteracija(mut start: u32, fun: fn(u32) -> u32, cond: fn(u32) -> bool) -> u32 
 /// 5. Ponavljamo korake 2-4
 
 fn bisekcija(mut a: f64, mut b: f64, fun: fn(f64) -> f64, prec: f64) -> f64 {
-    panic!("Not implemented");
+    if fun(a) * fun(b) > 0. {
+        panic!("Funkcija nima ničel!");
+    } else if fun(a) == 0. {
+        a
+    } else if fun(b) == 0. {
+        b
+    } else if a == b {
+        panic! {"a = b je točka!!!"};
+    } else {
+        loop {
+            let c: f64 = (a + b) / 2.;
+            if fun(c).abs() < prec {
+                break c;
+            } else if (a - b).abs() < prec {
+                break c;
+            } else if fun(c) == 0. {
+                break c;
+            } else {
+                if fun(a) * fun(c) < 0. {
+                    b = c;
+                } else {
+                    a = c;
+                }
+            }
+        }
+    }
 }
 
 /// ------------------------------------------------------------------------------------------------
@@ -72,6 +140,7 @@ fn bisekcija(mut a: f64, mut b: f64, fun: fn(f64) -> f64, prec: f64) -> f64 {
 /// Če uporabnik vpiše neveljavno število to ni napaka, program za pogoj aritmetičnega zaporedja upošteva samo veljavno vpisana števila.
 use std::cmp::Ordering;
 use std::io;
+use std::ptr::with_exposed_provenance;
 fn guessing_game() {
     println!("Guess the number!");
     let mut first: Option<i32> = None;
@@ -175,8 +244,39 @@ fn pyramid(n: u32) {
 /// A B C D C B A
 /// Napišite funkcijo `fn selection_sort(mut arr: [u32])`, ki uredi tabelo `arr` z uporabo algoritma urejanja z izbiranjem
 
+fn povecaj_za_ena(x: u32) -> u32 {
+    x + 1
+}
+
+fn vecje_od_sto(x: u32) -> bool {
+    println! {"Trenutno število je {x}"};
+    x > 100
+}
+
+fn identiteta(x: f64) -> f64 {
+    x
+}
+
+fn fun1(x: f64) -> f64 {
+    {
+        3. * x * x + 2. * x - 15.
+    }
+}
+
 fn main() {
-    println!("{}", fib(0, 1, 5));
+    //println!("{}", fib(0, 1, 5));
+    //println!("{}", je_veljaven_datum((31, 1, 2025)));
+    //println!("{}", je_veljaven_datum((29, 4, 2025)));
+    //println!("{}", je_veljaven_datum((30, 2, 2025)));
+    //println!("{}", je_veljaven_datum((29, 2, 1600)));
+    //println!("{}", je_veljaven_datum((29, 2, 1700)));
+    //println!("{}", je_veljaven_datum((29, 2, 2024)));
+    //println!("{}", je_veljaven_datum((31, 4, 2025)));
+    //println!("{}", iteracija(3, povecaj_za_ena, vecje_od_sto));
+    println!("{}", bisekcija(-10., 13.4, identiteta, 0.02));
+    println!("{}", bisekcija(0., 13.4, fun1, 0.02));
+    println!("{}", bisekcija(0., 0., identiteta, 0.02));
+    println!("{}", bisekcija(0., 0., fun1, 0.02));
 }
 
 #[cfg(test)]
