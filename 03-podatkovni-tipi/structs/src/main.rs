@@ -88,6 +88,52 @@ fn main() {
     //let izraz2: Izraz = Izraz::Operacija(
     //    Box::new(Izraz::Operacija)
     //)
+    let izraz31: Izraz = Izraz::Operacija(
+        Box::new(Izraz::Konstanta(1)),
+        BinOperacija::Plus,
+        Box::new(Izraz::Operacija(
+            Box::new(Izraz::Konstanta(2)),
+            BinOperacija::Times,
+            Box::new(Izraz::Konstanta(3)),
+        )),
+    );
+
+    let izraz32: Izraz = Izraz::Operacija(
+        Box::new(Izraz::Operacija(
+            Box::new(Izraz::Konstanta(1)),
+            BinOperacija::Plus,
+            Box::new(Izraz::Konstanta(2)),
+        )),
+        BinOperacija::Times,
+        Box::new(Izraz::Konstanta(3)),
+    );
+
+    let izraz33: Izraz = Izraz::Operacija(
+        Box::new(Izraz::Konstanta(1)),
+        BinOperacija::Plus,
+        Box::new(Izraz::Operacija(
+            Box::new(Izraz::Konstanta(2)),
+            BinOperacija::Plus,
+            Box::new(Izraz::Konstanta(3)),
+        )),
+    );
+
+    let izraz34: Izraz = Izraz::Operacija(
+        Box::new(Izraz::Operacija(
+            Box::new(Izraz::Konstanta(5)),
+            BinOperacija::Times,
+            Box::new(Izraz::Konstanta(5)),
+        )),
+        BinOperacija::Plus,
+        Box::new(Izraz::Operacija(
+            Box::new(Izraz::Konstanta(3)),
+            BinOperacija::Times,
+            Box::new(Izraz::Konstanta(3)),
+        )),
+    );
+    let ovrednoti34 = &izraz34.eval();
+    let prestej_konstante34 = &izraz34.collect();
+    println!("{prestej_konstante34}");
 }
 
 // 5. Ne, pri splošnih zaporedjih tega ne moremo storiti, npr. ne moremo smiselno sešteti
@@ -101,9 +147,71 @@ enum BinOperacija {
     Times,
 }
 
+fn zanka(obj: Izraz, nizz: &mut String) -> &str {
+    match obj {
+        Izraz::Konstanta(i) => {
+            let nizek = ((i).to_string());
+            &nizek
+        }
+
+        Izraz::Operacija(spremenljivka1, operacija, spremenljivka2) => match operacija {
+            BinOperacija::Plus => {
+                nizz.push_str("(");
+                nizz.push_str(zanka(*spremenljivka1, nizz));
+                nizz.push_str(" + ");
+                nizz.push_str(zanka(*spremenljivka2, nizz));
+                nizz.push_str(")");
+            }
+            BinOperacija::Minus => {
+                nizz.push_str("(");
+                nizz.push_str(zanka(*spremenljivka1, nizz));
+                nizz.push_str(" - ");
+                nizz.push_str(zanka(*spremenljivka2, nizz));
+                nizz.push_str(")");
+            }
+            BinOperacija::Times => {
+                nizz.push_str("(");
+                nizz.push_str(zanka(*spremenljivka1, nizz));
+                nizz.push_str(" * ");
+                nizz.push_str(zanka(*spremenljivka2, nizz));
+                nizz.push_str(")");
+            }
+        },
+    }
+}
+
 enum Izraz {
     Konstanta(u32),
     Operacija(Box<Izraz>, BinOperacija, Box<Izraz>),
+}
+
+impl Izraz {
+    fn eval(self: &Self) -> u32 {
+        match self {
+            Izraz::Operacija(spremenljivka1, operacija, spremenljivka2) => match operacija {
+                BinOperacija::Plus => (&spremenljivka1).eval() + (&spremenljivka2).eval(),
+                BinOperacija::Minus => (&spremenljivka1).eval() - (&spremenljivka2).eval(),
+                BinOperacija::Times => (&spremenljivka1).eval() * (&spremenljivka2).eval(),
+            },
+            Izraz::Konstanta(i) => *i,
+        }
+    }
+
+    fn collect(self: &Self) -> u32 {
+        match self {
+            Izraz::Operacija(levi_izraz, _, desni_izraz) => {
+                (levi_izraz).collect() + (desni_izraz).collect()
+            }
+            Izraz::Konstanta(_) => 1,
+        }
+    }
+
+    // metoda izpis še ni pravilno implementirana!
+    fn izpis(self: &Self) -> () {
+        let mut niz: String = String::new();
+        zanka(self, &mut niz);
+        println!("{}", niz);
+    }
 }
 
 const STEVILO: u8 = 3;
@@ -113,3 +221,6 @@ const STEVILO: u8 = 3;
 // velikost, da bi jo lahko lahko shranil na sklad, ker pa je deficija
 // tipa rekurzivna, moram zadevo z boxom shraniti na kopico. Torej je
 // box potreben
+
+//2. V zapis izraza ni potrebno dodajati oklepajev, ker je že iz gnezdenja
+// razvidno, v kakšenm vrstnem redu je potrebno izvajati operacije.

@@ -55,8 +55,8 @@ enum Izraz {
    - `5 * 5 + 4**2`
 4. Implementirajte metodo `eval`, ki izračuna vrednost izraza.
 5. Implementirajte metodo `collect`, ki vrne število konstant v izrazu.
-6. Implementirajte za izpisovanje `izpis`, ki vrne izraz v obliki `(a + b) * c`.
-   Poskrbite, da boste pravilno izpisali oklepaje, vendar se ne obremenjujte, če izpište kakšen dodaten oklepaj.
+6. Implementirajte metodo za izpisovanje `izpis`, ki vrne izraz v obliki `(a + b) * c`.
+   Poskrbite, da boste pravilno izpisali oklepaje, vendar se ne obremenjujte, če izpišete kakšen dodaten oklepaj.
 7. Napišite nekaj primernih testov za metode `eval`, `collect` in `izpis`.
 
 <!-- ## Razširitve AST
