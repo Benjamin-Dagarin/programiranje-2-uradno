@@ -147,37 +147,47 @@ enum BinOperacija {
     Times,
 }
 
-fn zanka(obj: Izraz, nizz: &mut String) -> &str {
-    match obj {
-        Izraz::Konstanta(i) => {
-            let nizek = ((i).to_string());
-            &nizek
-        }
+const uklepaj: String = "(".to_string();
+const plus: String = " + ".to_string();
+const minus: String = " - ".to_string();
+const krat: String = " * ".to_string();
+const zaklepaj: String = ")".to_string();
 
-        Izraz::Operacija(spremenljivka1, operacija, spremenljivka2) => match operacija {
-            BinOperacija::Plus => {
-                nizz.push_str("(");
-                nizz.push_str(zanka(*spremenljivka1, nizz));
-                nizz.push_str(" + ");
-                nizz.push_str(zanka(*spremenljivka2, nizz));
-                nizz.push_str(")");
+const fn notranja_zanka(obj: Izraz) -> String {
+    let mut niz = Box::new(String::new());
+    const fn zanka(objekt: Izraz, nizz: &mut String) -> () {
+        match objekt {
+            Izraz::Konstanta(i) => {
+                let nizek = ((i).to_string());
+                nizek
             }
-            BinOperacija::Minus => {
-                nizz.push_str("(");
-                nizz.push_str(zanka(*spremenljivka1, nizz));
-                nizz.push_str(" - ");
-                nizz.push_str(zanka(*spremenljivka2, nizz));
-                nizz.push_str(")");
-            }
-            BinOperacija::Times => {
-                nizz.push_str("(");
-                nizz.push_str(zanka(*spremenljivka1, nizz));
-                nizz.push_str(" * ");
-                nizz.push_str(zanka(*spremenljivka2, nizz));
-                nizz.push_str(")");
-            }
-        },
-    }
+            Izraz::Operacija(spremenljivka1, operacija, spremenljivka2) => match operacija {
+                BinOperacija::Plus => || {
+                    (&mut nizz).push_str(&uklepaj[..]);
+                    (&mut nizz).push_str(zanka(*spremenljivka1, nizz));
+                    (&mut nizz).push_str(&plus[..]);
+                    (&mut nizz).push_str(zanka(*spremenljivka2, nizz));
+                    (&mut nizz).push_str(&zaklepaj[..]);
+                },
+                BinOperacija::Minus => || {
+                    (&mut nizz).push_str(&uklepaj[..]);
+                    (&mut nizz).push_str(zanka(*spremenljivka1, nizz));
+                    (&mut nizz).push_str(&minus[..]);
+                    (&mut nizz).push_str(zanka(*spremenljivka2, nizz));
+                    (&mut nizz).push_str(&zaklepaj[..]);
+                },
+                BinOperacija::Times => || {
+                    (&mut nizz).push_str(&uklepaj[..]);
+                    (&mut nizz).push_str(zanka(*spremenljivka1, nizz));
+                    (&mut nizz).push_str(&krat[..]);
+                    (&mut nizz).push_str(zanka(*spremenljivka2, nizz));
+                    (&mut nizz).push_str(&zaklepaj[..]);
+                },
+            },
+        }
+    };
+    zanka(obj, &mut niz);
+    niz
 }
 
 enum Izraz {
@@ -208,8 +218,7 @@ impl Izraz {
 
     // metoda izpis še ni pravilno implementirana!
     fn izpis(self: &Self) -> () {
-        let mut niz: String = String::new();
-        zanka(self, &mut niz);
+        let niz = notranja_zanka(self);
         println!("{}", niz);
     }
 }
