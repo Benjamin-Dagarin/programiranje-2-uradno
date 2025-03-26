@@ -82,3 +82,73 @@ fn test_degenerate_cases() {
 
 
 */
+
+// Apply
+
+fn apply_int(f: impl Fn(i64) -> i64, x : i64) -> i64 {
+f(x)
+}
+
+fn apply_int2<F>(f: F, x:i64) -> i64
+where 
+F: Fn(i64) -> i64,
+{
+    f(x)
+}
+
+fn apply_int_dyn(f: &dyn Fn(i64) -> i64, x:i64) -> i64 {
+    return f(x)
+}
+
+fn apply_int_dyn2<T,U>(f: &dyn Fn(T) -> U, x:T) -> U {
+    return f(x)
+}
+
+
+fn apply_int3<T, U>(f: impl Fn(T) -> U, x : T) -> U {
+    f(x)
+    }
+
+/* Razlika med impl in &dyn:
+pri impl rabimo struct, ki implementira Fn(T) -> U, 
+pri &dyn pa kažemo na nekaj, kar kaže na nekaj, kar se zna odzvati na 
+Fn(T) -> U
+&dyn je počasnejši
+*/
+
+//map
+
+fn map<T>(f : impl Fn(&T) -> T, vc : Vec<T>) -> Vec<T>
+where 
+T: std::fmt::Debug, {
+    let vct: Vec<T> = vc.iter().map(f).collect();
+    println!("Vektor vc je: {:?}", vc);
+    vct
+
+}
+
+// .iter vzame referenco in ne prevzame lastništva
+
+//ponavljaj
+
+fn ponavljaj<T>(n: i64, f: impl Fn(T) -> T, x: T) -> T {
+    unimplemented!()
+}
+
+fn main(){
+let a = |x:i64| {x*2};
+println!("impl: {}, dyn: {}", 
+apply_int(a, 10), 
+apply_int_dyn(&a, 10));
+let b = |x: i64| {x*10};
+let fncs = vec![a, b];
+println!("impl: {}, dyn: {}", 
+apply_int(fncs[0], 10), 
+apply_int_dyn(&fncs[1], 10));
+
+let v1 = vec![1, 2, 3];
+let v2 = map(|x| {x+1}, v1);
+println!{"{:?}", v2};
+/*println!{"{:?}", v1}; 
+Tega ne moremo napisati, ker map prevzame lastništvo*/
+}
