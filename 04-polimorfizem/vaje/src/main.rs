@@ -1,5 +1,6 @@
 use std::fmt::Display;
 use std::ops::Add;
+use std::fmt::Debug;
 
 struct Par<T> {
     x: T,
@@ -26,26 +27,39 @@ where
 }
 
 #[derive(Debug)]
-struct AritmeticnoZaporedje<T> {
+struct AritmeticnoZaporedje<T>
+where 
+T : Debug,
+{
     a0: T,
     d: T,
     ai: T,
 }
 
-impl<T> Sequence<T> for AritmeticnoZaporedje<T> {
-    fn new(a0: i32, d: i32) -> Self {
-        Self { a0, d, ai: a0 }
-    }
-    fn start(&self) -> T {
-        
+impl<T> Sequence<T> for AritmeticnoZaporedje<T>
+where 
+T: Debug + Clone + std::ops::Sub + PartialOrd, {
+    fn new(a00:T, dd: T) -> Self 
+    {
+        Self{a0 :a00.clone(), d : dd, ai : a00}
     }
 
-    fn k_th(self: &Self, n: i32) -> &Self {
-        self.a0 + self.d * n
+    fn start(&self) -> T {
+        unimplemented!();
+    }
+
+    fn k_th(self: &Self, _n:usize) -> Option<T> {
+        unimplemented!();
+        //&(self.a0 + self.d * n)
     }
 
     fn contains(&self, item : T) -> bool {
-        
+        if (((*self).d)-item) >= 0 {
+
+        }
+    }
+    fn name(&self) -> String {
+        format!("a0: {:?}, d : {:?}", self.a0, self.d)
     }
 }
 
@@ -114,7 +128,10 @@ impl Izraz {
         }
     }}
 //////////////////////////////////////////////////////////////////////////////
-trait Sequence<T>{
+trait Sequence<T>
+where
+T: Debug,{
+fn new(a : T, b: T) -> AritmeticnoZaporedje<T>;
 fn name(&self) -> String;
 fn k_th(&self, k:usize) -> Option<T>;
 fn contains(&self, item : T) -> bool;
@@ -156,6 +173,7 @@ fn start(&self) -> T;
 */
 
 impl Sequence<i64> for Constant<i64> {
+    fn new(a00 : i64, d:i64) -> AritmeticnoZaporedje<i64>{a0 : a00, d : 0, ai : a00}
     fn name(&self) -> String {
         format!("Constant")
     }
